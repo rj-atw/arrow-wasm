@@ -1,0 +1,13 @@
+[package]
+name = "run"
+version = "0.1.0"
+authors = [""]
+edition = "2018"
+
+[dependencies]
+wasmer-runtime = "0.13.1"
+
+[dependencies.arrow]
+# Add the wasmer-runtime as a dependency
+path = "/home/rj/src/code/arrow/rust/arrow" 
+features = ["simd", "stdlib"]
