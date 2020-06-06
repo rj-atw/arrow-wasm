@@ -9,5 +9,5 @@ wasmer-runtime = "0.13.1"
 
 [dependencies.arrow]
 # Add the wasmer-runtime as a dependency
-path = "/home/rj/src/code/arrow/rust/arrow" 
+git = "https://github.com/rj-atw/arrow.git" 
 features = ["simd", "stdlib"]

@@ -22,8 +22,8 @@ fn main() -> Result<()> {
     let file = File::open("uk_cities.csv").unwrap();
 
     let mut csv = csv::Reader::new(file, Arc::new(schema), false, 1024, None);
-    let batch = csv.next().unwrap().unwrap();
-
+    //let batch = csv.next().unwrap().unwrap();
+/*
     let mut writer  = Vec::<u8>::new();
 
     let schema = Schema::new(vec![
@@ -31,7 +31,6 @@ fn main() -> Result<()> {
         Field::new("lat", DataType::Float64, false),
         Field::new("lng", DataType::Float64, false),
     ]);
-
 
    {
     let mut w = arrow::ipc::writer::StreamWriter::try_new(& mut writer, &schema).unwrap();
@@ -45,8 +44,27 @@ fn main() -> Result<()> {
 
 
     print!("Schema {}\n", batch.schema().to_json());
+    */
 
-    print_batches(&vec![reader.next().unwrap().unwrap()])
+
+    let schema = Schema::new(vec![
+        Field::new("city", DataType::Utf8, false),
+        Field::new("lat", DataType::Float64, false),
+        Field::new("lng", DataType::Float64, false),
+    ]);
+
+    let mut writer = File::create("simple.arrow").unwrap();
+
+    let mut w = arrow::ipc::writer::FileWriter::try_new(& mut writer, &schema).unwrap();
+    while let Ok(Some(batch)) = csv.next() {
+      w.write(&batch).unwrap();
+    }
+    //w.write(&batch).unwrap();
+    w.finish()
+ 
+
+   //print_batches(&vec![reader.next().unwrap().unwrap()])
+
 }
 
 fn call_to_wasm(data: &Vec<u8>) -> u32 {
@@ -87,6 +105,8 @@ fn call_to_wasm(data: &Vec<u8>) -> u32 {
     let reduce: Func<(WasmPtr<u8,Array>, u32), u32> =  instance.func("reduce").unwrap();
     let result = reduce.call(wasm_ptr, data.len() as u32).unwrap();
     print!("Call time: {} ms\n", Instant::now().duration_since(t1).as_millis());
+
+
 
     result
 }
